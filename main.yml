@@ -1,0 +1,38 @@
+---
+   - name: Download yum packages
+     yum:
+       name: "{{ item }}"
+       state: present
+     loop:
+     - epel-release
+     - python2-pip
+
+   - name: Update pip to make it work with cryptography
+     shell: python -m pip install pip==18.1
+   
+   - name: Install cryptography
+     pip:
+       name: cryptography
+       state: latest 
+
+   - name: Generate an OpenSSL private key
+     openssl_privatekey:
+       path: /etc/ssl/ansible.com.pem
+
+   - name: Generate an OpenSSL CSR
+     openssl_csr:
+       path: /etc/ssl/ansible.com.csr
+       privatekey_path: /etc/ssl/ansible.com.pem
+       common_name: "{{ ansible_ssh_host }}"
+       organization_name: Mish
+   
+   - name: Generate the certificate
+     openssl_certificate:
+       path: /etc/ssl/ansible.com.crt
+       privatekey_path: /etc/ssl/ansible.com.pem
+       csr_path: /etc/ssl/ansible.com.csr
+       provider: selfsigned
+  
+     
+
+...

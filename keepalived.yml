@@ -1,0 +1,49 @@
+---
+ - hosts: keepalived_slave:keepalived_master
+   become: true
+   tasks:
+   - name: Install keepalivd
+     yum:
+       name: keepalived
+       state: latest
+
+   - name: Template to master
+     template:
+       src: keepalived.conf.j2
+       dest: /etc/keepalived/keepalived.conf
+     vars:
+       state: MASTER
+       priority: 255
+     when: inventory_hostname in groups["keepalived_master"]
+
+   - name: Template to slave
+     template:
+       src: keepalived.conf.j2
+       dest: /etc/keepalived/keepalived.conf
+     vars:
+       state: BACKUP
+       priority: 253
+     when: inventory_hostname in groups["keepalived_slave"]
+
+
+#   - name: Copy file to master
+#     copy:
+#       src: keepalived_master.conf
+#       dest: /etc/keepalived/keepalived.conf
+#     when: inventory_hostname in groups["keepalived_master"]
+   
+#   - name: Copy file to slave
+#     copy:
+#       src: keepalived_slave.conf
+#       dest: /etc/keepalived/keepalived.conf
+#     when: inventory_hostname in groups["keepalived_slave"]
+  
+   - name: Turn on keepalived
+     service:
+       name: keepalived
+       state: restarted
+  
+ 
+...
+
+

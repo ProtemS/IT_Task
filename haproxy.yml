@@ -1,0 +1,29 @@
+---
+ - hosts: haproxy
+   become: true
+   tasks:
+   - name: Include role ssl in play
+     include_role:
+       name: ssl
+   
+   - name: Install haproxy
+     yum:
+       name: haproxy
+       state: latest
+   
+   - name: Combine certificate and key into one file
+     shell: cat /etc/ssl/ansible.com.crt /etc/ssl/ansible.com.pem >> /etc/ssl/haproxy.pem
+
+   - name: Copy haproxy configuration file
+     copy:
+       src: haproxytemp
+       dest: /etc/haproxy/haproxy.cfg
+   
+   - name: Activate haproxy 
+     service:
+       name: haproxy
+       state: restarted
+...
+     
+
+   

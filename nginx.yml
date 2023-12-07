@@ -1,0 +1,20 @@
+---
+ - hosts: nginx
+   become: true
+   tasks:
+   - name: Include role ssl in play
+     include_role:
+       name: ssl
+   - name: Install nginx
+     yum:
+       name: nginx
+       state: latest
+   - name: Copy nginx configuration file
+     copy:
+       src: nginxtemp
+       dest: /etc/nginx/nginx.conf
+   - name: Start nginx
+     service: 
+       name: nginx
+       state: restarted
+...
