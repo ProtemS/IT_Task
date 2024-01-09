@@ -1,5 +1,5 @@
 ---
- - hosts: nginx
+ - hosts: web
    become: true
    tasks:
    - name: Include role ssl in play

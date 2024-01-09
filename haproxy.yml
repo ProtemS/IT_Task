@@ -15,9 +15,12 @@
      shell: cat /etc/ssl/ansible.com.crt /etc/ssl/ansible.com.pem >> /etc/ssl/haproxy.pem
 
    - name: Copy haproxy configuration file
-     copy:
-       src: haproxytemp
+     template:
+       src: haproxytemp.j2
        dest: /etc/haproxy/haproxy.cfg
+     vars: 
+       ip_cat: "{{ groups['catsfood'][0] }}"
+       ip_head: "{{ groups['bighead'][0] }}"
    
    - name: Activate haproxy 
      service:

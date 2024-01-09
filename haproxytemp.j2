@@ -1,0 +1,22 @@
+global
+       maxconn 50000
+       log /dev/log local0
+
+defaults
+       log global
+       mode http
+       option httplog
+       maxconn 3000
+
+frontend www
+       bind *:443 ssl crt /etc/ssl/haproxy.pem
+       acl is_catfood req.hdr(host) catsfood.com
+       use_backend cat if is_catfood
+       default_backend head
+
+backend cat
+       server server1 {{ ip_cat }}:443 ssl verify none
+
+
+backend head
+       server server2 {{ ip_head }}:443 ssl verify none

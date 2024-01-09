@@ -1,0 +1,17 @@
+---
+ - hosts: localhost
+   become: true
+   tasks:
+   - name: Start 
+     debug:
+       msg: Initializing tasks...
+ - name: Importing CA playbook
+   import_playbook: ca.yml 
+ - name: Importing webserver tasks...
+   import_playbook: nginx.yml
+ - name: Importing Haproxy tasks...
+   import_playbook: haproxy.yml
+ - name: Importing keepalived tasks...
+   import_playbook: keepalived.yml
+
+...

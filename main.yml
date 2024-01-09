@@ -9,11 +9,11 @@
 
    - name: Update pip to make it work with cryptography
      shell: python -m pip install pip==18.1
-   
+
    - name: Install cryptography
      pip:
        name: cryptography
-       state: latest 
+       state: latest
 
    - name: Generate an OpenSSL private key
      openssl_privatekey:
@@ -23,17 +23,33 @@
      openssl_csr:
        path: /etc/ssl/ansible.com.csr
        privatekey_path: /etc/ssl/ansible.com.pem
-       common_name: "{{ ansible_ssh_host }}"
-       organization_name: Mish
-       subject_alt_name: 'DNS:catsfood.com,DNS:bighead.com'
-   
-   - name: Generate the certificate
+       common_name: rotemtestingansible3.com
+       organization_name: Mishal
+#       subject_alt_name:
+#       - 'DNS:rotemtestingansible3.com'
+       subject_alt_name: "{{ item.value | map('regex_replace', '^', 'DNS:') | list }}"
+     with_dict:
+       ips:
+       - bighead.com
+       - rotemtestingansible3.com
+       - catsfood.com
+
+
+   - name: Copy CA cert
+     copy:
+       src: "{{ item.src }}"
+       dest: "{{ item.dest }}"
+     loop:
+     - { src: /etc/ssl/CA_key.pem, dest: /etc/ssl/CA_key.pem }
+     - { src: /etc/ssl/CA.crt, dest: /etc/ssl/CA.crt }
+
+   - name: sign the CSR for the LDAP server
      openssl_certificate:
        path: /etc/ssl/ansible.com.crt
-       privatekey_path: /etc/ssl/ansible.com.pem
        csr_path: /etc/ssl/ansible.com.csr
-       provider: selfsigned
-  
-     
+       provider: ownca
+       ownca_path: /etc/ssl/CA.crt
+       ownca_privatekey_path: /etc/ssl/CA_key.pem
 
 ...
+
