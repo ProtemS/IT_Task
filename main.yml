@@ -25,6 +25,7 @@
        privatekey_path: /etc/ssl/ansible.com.pem
        common_name: "{{ ansible_ssh_host }}"
        organization_name: Mish
+       subject_alt_name: 'DNS:catsfood.com,DNS:bighead.com'
    
    - name: Generate the certificate
      openssl_certificate:
